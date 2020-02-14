@@ -209,13 +209,13 @@ ResultSet *getAvailableFonts() {
 }
 
 bool resultMatches(FontDescriptor *result, FontDescriptor *desc) {
-  if (desc->postscriptName && strcmp(desc->postscriptName, result->postscriptName) != 0)
+  if (!desc->postscriptName.empty() && desc->postscriptName != result->postscriptName)
     return false;
 
-  if (desc->family && strcmp(desc->family, result->family) != 0)
+  if (!desc->family.empty() && desc->family != result->family)
     return false;
 
-  if (desc->style && strcmp(desc->style, result->style) != 0)
+  if (!desc->style.empty() && desc->style != result->style)
     return false;
 
   if (desc->weight && desc->weight != result->weight)
@@ -399,7 +399,7 @@ public:
   }
 };
 
-FontDescriptor *substituteFont(char *postscriptName, char *string) {
+FontDescriptor *substituteFont(const std::string &postscriptName, const std::string &string) {
   FontDescriptor *res = NULL;
 
   IDWriteFactory *factory = NULL;
@@ -415,7 +415,7 @@ FontDescriptor *substituteFont(char *postscriptName, char *string) {
 
   // find the font for the given postscript name
   FontDescriptor *desc = new FontDescriptor();
-  desc->postscriptName = postscriptName;
+  desc->postscriptName = postscriptName.c_str();
   FontDescriptor *font = findFont(desc);
 
   // create a text format object for this font
@@ -453,7 +453,7 @@ FontDescriptor *substituteFont(char *postscriptName, char *string) {
   }
 
   // convert utf8 string for substitution to utf16
-  WCHAR *str = utf8ToUtf16(string);
+  WCHAR *str = utf8ToUtf16(string.c_str());
 
   // create a text layout for the substitution string
   IDWriteTextLayout *layout = NULL;

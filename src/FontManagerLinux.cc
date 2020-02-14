@@ -159,14 +159,14 @@ FcPattern *createPattern(FontDescriptor *desc) {
   FcInit();
   FcPattern *pattern = FcPatternCreate();
 
-  if (desc->postscriptName)
-    FcPatternAddString(pattern, FC_POSTSCRIPT_NAME, (FcChar8 *) desc->postscriptName);
+  if (!desc->postscriptName.empty())
+    FcPatternAddString(pattern, FC_POSTSCRIPT_NAME, (FcChar8 *) desc->postscriptName.c_str());
 
-  if (desc->family)
-    FcPatternAddString(pattern, FC_FAMILY, (FcChar8 *) desc->family);
+  if (!desc->family.empty())
+    FcPatternAddString(pattern, FC_FAMILY, (FcChar8 *) desc->family.c_str());
 
-  if (desc->style)
-    FcPatternAddString(pattern, FC_STYLE, (FcChar8 *) desc->style);
+  if (!desc->style.empty())
+    FcPatternAddString(pattern, FC_STYLE, (FcChar8 *) desc->style.c_str());
 
   if (desc->italic)
     FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
@@ -211,20 +211,20 @@ FontDescriptor *findFont(FontDescriptor *desc) {
   return res;
 }
 
-FontDescriptor *substituteFont(char *postscriptName, char *string) {
+FontDescriptor *substituteFont(const std::string &postscriptName, const std::string &string) {
   FcInit();
 
   // create a pattern with the postscript name
   FcPattern* pattern = FcPatternCreate();
-  FcPatternAddString(pattern, FC_POSTSCRIPT_NAME, (FcChar8 *) postscriptName);
+  FcPatternAddString(pattern, FC_POSTSCRIPT_NAME, (FcChar8 *) postscriptName.c_str());
 
   // create a charset with each character in the string
   FcCharSet* charset = FcCharSetCreate();
-  int len = strlen(string);
+  const int len = string.size();
 
   for (int i = 0; i < len;) {
     FcChar32 c;
-    i += FcUtf8ToUcs4((FcChar8 *)string + i, &c, len - i);
+    i += FcUtf8ToUcs4((FcChar8 *)&string[i], &c, len - i);
     FcCharSetAddChar(charset, c);
   }
 

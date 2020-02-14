@@ -96,18 +96,18 @@ CTFontDescriptorRef getFontDescriptor(FontDescriptor *desc) {
   NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
   CTFontSymbolicTraits symbolicTraits = 0;
 
-  if (desc->postscriptName) {
-    NSString *postscriptName = [NSString stringWithUTF8String:desc->postscriptName];
+  if (!desc->postscriptName.empty()) {
+    NSString *postscriptName = [NSString stringWithUTF8String:desc->postscriptName.c_str()];
     attrs[(id)kCTFontNameAttribute] = postscriptName;
   }
 
-  if (desc->family) {
-    NSString *family = [NSString stringWithUTF8String:desc->family];
+  if (!desc->family.empty()) {
+    NSString *family = [NSString stringWithUTF8String:desc->family.c_str()];
     attrs[(id)kCTFontFamilyNameAttribute] = family;
   }
 
-  if (desc->style) {
-    NSString *style = [NSString stringWithUTF8String:desc->style];
+  if (!desc->style.empty()) {
+    NSString *style = [NSString stringWithUTF8String:desc->style.c_str()];
     attrs[(id)kCTFontStyleNameAttribute] = style;
   }
 
@@ -226,19 +226,19 @@ FontDescriptor *findFont(FontDescriptor *desc) {
   return res;
 }
 
-FontDescriptor *substituteFont(char *postscriptName, char *string) {
+FontDescriptor *substituteFont(const std::string &postscriptName, const std::string &string) {
   FontDescriptor *res = NULL;
   
   // create a font descriptor to find the font by its postscript name
   // we don't use CTFontCreateWithName because that supports font
   // names other than the postscript name but prints warnings.
-  NSString *ps = [NSString stringWithUTF8String:postscriptName];
+  NSString *ps = [NSString stringWithUTF8String:postscriptName.c_str()];
   NSDictionary *attrs = @{(id)kCTFontNameAttribute: ps};
   CTFontDescriptorRef descriptor = CTFontDescriptorCreateWithAttributes((CFDictionaryRef) attrs);
   CTFontRef font = CTFontCreateWithFontDescriptor(descriptor, 12.0, NULL);
   
   // find a substitute font that support the given characters
-  NSString *str = [NSString stringWithUTF8String:string];
+  NSString *str = [NSString stringWithUTF8String:string.c_str()];
   CTFontRef substituteFont = CTFontCreateForString(font, (CFStringRef) str, CFRangeMake(0, [str length]));
   CTFontDescriptorRef substituteDescriptor = CTFontCopyFontDescriptor(substituteFont);
   
