@@ -103,7 +103,7 @@ public:
       res.Set(Napi::String::New(env, "style"), Napi::String::New(env, style));
     }
 
-    res.Set( Napi::String::New(env, "weight"), Napi::Number::New(env, weight));
+    res.Set(Napi::String::New(env, "weight"), Napi::Number::New(env, weight));
     res.Set(Napi::String::New(env, "width"), Napi::Number::New(env, width));
     res.Set(Napi::String::New(env, "italic"), Napi::Boolean::New(env, italic));
     res.Set(Napi::String::New(env, "monospace"), Napi::Boolean::New(env, monospace));
